@@ -1,223 +1,168 @@
-# 🚢 Projeto Titanic --- Machine Learning
+# 🚢 Previsão de Sobrevivência no Titanic
 
-Projeto de **Machine Learning** desenvolvido em Python utilizando o
-famoso dataset do **Titanic disponibilizado no Kaggle**.
+Projeto de Machine Learning desenvolvido com o dataset do Titanic, com o objetivo de analisar os dados dos passageiros e criar modelos capazes de prever a sobrevivência.
 
-O objetivo é analisar os dados dos passageiros e criar modelos capazes
-de prever se um passageiro **sobreviveu ou não ao naufrágio**.
+O projeto foi desenvolvido como parte dos meus estudos em **Ciência de Dados**, passando por etapas de análise exploratória, tratamento dos dados, engenharia de atributos, treinamento, otimização e avaliação de modelos de Machine Learning.
 
-Este projeto foi desenvolvido como parte dos meus estudos em **Ciência
-de Dados**, com foco em aprender, na prática, etapas de análise de
-dados, pré-processamento, treinamento, otimização e avaliação de modelos
-de classificação.
+---
 
 ## 📌 Objetivos
 
--   Explorar e entender os dados do Titanic;
--   Identificar e tratar valores ausentes;
--   Criar novas variáveis a partir dos dados existentes;
--   Preparar variáveis numéricas e categóricas para Machine Learning;
--   Treinar diferentes modelos de classificação;
--   Otimizar hiperparâmetros utilizando `GridSearchCV`;
--   Comparar o desempenho dos modelos;
--   Utilizar um `VotingClassifier` para combinar diferentes modelos;
--   Gerar previsões para os dados de teste e salvar o resultado em um
-    arquivo CSV.
+- Explorar e compreender os dados do Titanic;
+- Realizar análise exploratória dos dados;
+- Identificar padrões relacionados à sobrevivência;
+- Realizar tratamento e pré-processamento dos dados;
+- Criar novas variáveis para melhorar os modelos;
+- Treinar diferentes algoritmos de Machine Learning;
+- Utilizar `GridSearchCV` para otimização dos modelos;
+- Comparar o desempenho dos modelos;
+- Criar um `VotingClassifier`;
+- Gerar previsões para submissão no Kaggle.
 
-## 📊 Sobre os dados
+---
 
-O projeto utiliza dados do Titanic obtidos a partir do Kaggle.
+## 📊 Sobre o Dataset
 
-Entre as informações utilizadas estão:
+O dataset contém informações sobre passageiros do Titanic, incluindo características como:
 
--   `PassengerId` --- identificador do passageiro;
--   `Pclass` --- classe do passageiro;
--   `Name` --- nome;
--   `Sex` --- sexo;
--   `Age` --- idade;
--   `SibSp` --- número de irmãos/cônjuges a bordo;
--   `Parch` --- número de pais/filhos a bordo;
--   `Ticket` --- número da passagem;
--   `Fare` --- tarifa paga;
--   `Cabin` --- cabine;
--   `Embarked` --- porto de embarque;
--   `Survived` --- variável que indica se o passageiro sobreviveu.
+- Classe do passageiro;
+- Sexo;
+- Idade;
+- Número de familiares;
+- Tarifa paga;
+- Porto de embarque;
+- Número do bilhete;
+- Sobrevivência.
 
-## 🔎 Análise e preparação dos dados
+A variável **`Survived`** é utilizada como variável alvo:
 
-Inicialmente, foi realizada uma exploração dos dados utilizando
-**Pandas**, verificando:
+- `0` → Não sobreviveu
+- `1` → Sobreviveu
 
--   Estrutura e tamanho do dataset;
--   Tipos das variáveis;
--   Estatísticas descritivas;
--   Valores ausentes;
--   Distribuição de algumas características dos passageiros.
+---
 
-Também foram criadas visualizações para analisar relações entre
-sobrevivência e variáveis como:
+## 🔎 Análise Exploratória
 
--   Sexo;
--   Classe;
--   Idade;
--   Porto de embarque;
--   Sexo e classe.
+Antes da criação dos modelos, foram realizadas análises para compreender melhor os dados.
 
-Além disso, foram criadas duas novas variáveis:
+Entre as análises realizadas estão:
 
--   `familia_tamanho` --- soma de `SibSp` e `Parch`, acrescida de 1 para
-    representar o próprio passageiro;
--   `esta_sozinho` --- indica se o passageiro estava viajando sozinho.
+- Quantidade de sobreviventes;
+- Sobreviventes por porto;
+- Distribuição das faixas etárias;
+- Percentual de sobrevivência por porto;
+- Percentual de sobrevivência por classe;
+- Percentual de sobrevivência por sexo;
+- Relação entre sexo e classe.
+
+Também foram utilizadas visualizações gráficas para facilitar a interpretação dos dados.
+
+---
+
+## 🧹 Tratamento dos Dados
+
+Durante o pré-processamento foram realizadas algumas etapas para preparar os dados para os modelos.
+
+### Remoção de colunas
+
+As colunas com mais de **20% de valores ausentes** foram removidas. Nesse caso, a coluna `Cabin` foi retirada.
+
+Para a modelagem, também foram removidas:
+
+- `PassengerId`
+- `Embarked`
+
+### Engenharia de atributos
+
+Foram criadas novas variáveis a partir dos dados existentes, incluindo:
+
+- `familia_tamanho` → tamanho da família do passageiro;
+- `esta_sozinho` → indica se o passageiro estava viajando sozinho.
+
+---
 
 ## ⚙️ Pré-processamento
 
-O pré-processamento foi estruturado utilizando `Pipeline` e
-`ColumnTransformer` do Scikit-learn.
+Foi utilizado o `ColumnTransformer` juntamente com `Pipeline` do Scikit-learn para organizar o processo de preparação dos dados.
 
-### Variáveis numéricas
+O pré-processamento inclui tratamento das variáveis numéricas e categóricas antes do treinamento dos modelos.
 
-Foi utilizado:
+A utilização de pipelines ajuda a manter o processo de transformação dos dados organizado e evita a necessidade de realizar manualmente cada etapa para os diferentes modelos.
 
--   `SimpleImputer` com estratégia de mediana para valores ausentes;
--   `StandardScaler` para padronização.
+---
 
-### Variáveis categóricas
+## 🤖 Modelos Utilizados
 
-Foi utilizado:
-
--   `SimpleImputer` com a categoria mais frequente;
--   `OneHotEncoder` para transformar variáveis categóricas em valores
-    numéricos.
-
-Essa estrutura permite que o pré-processamento seja realizado junto com
-o treinamento dos modelos.
-
-## 🤖 Modelos utilizados
-
-Foram treinados e comparados três modelos principais:
+Foram treinados e comparados quatro modelos:
 
 ### Regressão Logística
 
-Utilizada como um modelo de classificação baseado em uma relação entre
-as variáveis de entrada e a probabilidade de sobrevivência.
+Modelo utilizado como uma abordagem inicial para classificação binária.
 
 ### Árvore de Decisão
 
-Modelo baseado em divisões sucessivas dos dados para realizar a
-classificação.
+Modelo baseado em regras de decisão construídas a partir das características dos passageiros.
 
 ### Random Forest
 
-Conjunto de várias árvores de decisão, buscando melhorar a capacidade de
-generalização do modelo.
-
-Também foi utilizado um:
+Conjunto de várias árvores de decisão, buscando melhorar a capacidade de generalização do modelo.
 
 ### Voting Classifier
 
-O `VotingClassifier` combina as previsões dos modelos de Regressão
-Logística, Árvore de Decisão e Random Forest.
+Modelo de ensemble que combina as previsões de diferentes modelos para realizar a classificação final.
 
-## 🔧 Otimização dos modelos
+---
 
-Foi utilizado o `GridSearchCV` para testar diferentes combinações de
-hiperparâmetros e encontrar configurações com melhor desempenho durante
-a validação cruzada.
+## 🔧 Otimização dos Modelos
 
-Os modelos foram avaliados principalmente utilizando a métrica:
+Foi utilizado o **GridSearchCV** para testar diferentes combinações de hiperparâmetros e encontrar configurações mais adequadas para os modelos.
 
-**Accuracy (Acurácia)**
+O processo foi aplicado aos modelos:
 
-Também foram analisadas:
+- Regressão Logística;
+- Árvore de Decisão;
+- Random Forest;
+- Voting Classifier.
 
--   Precisão;
--   Recall;
--   F1-Score;
--   Matriz de confusão.
+---
 
-## 📈 Resultados
+## 📈 Desempenho dos Modelos
 
-Os resultados obtidos no conjunto de teste foram:
+Após o treinamento e otimização, os modelos foram avaliados no conjunto de teste utilizando:
 
-  Modelo                  Acurácia   Precisão   Recall     F1
-  --------------------- ---------- ---------- -------- ------
-  Regressão Logística         0.82       0.80     0.71   0.75
-  Árvore de Decisão           0.78       0.75     0.65   0.70
-  Random Forest               0.82       0.80     0.70   0.74
-  Voting Classifier           0.81       0.76     0.74   0.75
+- Acurácia;
+- Precisão;
+- Recall;
+- F1-Score.
 
-Na validação cruzada realizada durante o `GridSearchCV`, a Random Forest
-apresentou o maior resultado entre os três modelos individuais, com
-aproximadamente **0.83 de acurácia média**.
+| Modelo | Acurácia | Precisão | Recall | F1-Score |
+|---|---:|---:|---:|---:|
+| Regressão Logística | **0.83** | **0.84** | 0.73 | 0.78 |
+| Árvore de Decisão | 0.80 | 0.80 | 0.69 | 0.74 |
+| Random Forest | 0.81 | 0.82 | 0.69 | 0.75 |
+| Voting Classifier | 0.82 | 0.83 | 0.72 | 0.77 |
 
-Os resultados acima representam as avaliações realizadas no notebook e
-podem variar caso o processamento, os dados ou os parâmetros sejam
-alterados.
+Além das métricas, foram utilizadas **matrizes de confusão** para visualizar os acertos e erros de classificação de cada modelo.
 
-## 📁 Estrutura do projeto
+> As métricas acima correspondem à avaliação realizada no conjunto de teste utilizado no notebook.
 
-``` text
-projetoTitanic/
-│
-├── projeto.ipynb
-├── README.md
-├── resultado.csv
-│
-└── data/
-    ├── test-selected-columns.csv
-    └── train.csv
-```
+---
 
-### Arquivos
+## 🌲 Importância das Variáveis
 
-**`projeto.ipynb`**\
-Notebook principal contendo a análise dos dados, visualizações,
-pré-processamento, treinamento, otimização e avaliação dos modelos.
+Também foi analisada a importância das características utilizadas pelo modelo de **Random Forest**.
 
-**`resultado.csv`**\
-Arquivo gerado pelo projeto contendo as previsões realizadas para os
-dados de teste. O arquivo possui as colunas `PassengerId` e `Survived`.
+Essa etapa permite observar quais atributos tiveram maior influência nas decisões realizadas pelo modelo.
 
-**`data/train.csv`**\
-Dataset utilizado para análise e treinamento dos modelos.
+---
 
-**`data/test-selected-columns.csv`**\
-Dados utilizados para realizar as previsões finais.
+## 🧪 Previsão no Dataset de Teste
 
-## 🛠️ Tecnologias utilizadas
+Após o treinamento dos modelos, o dataset de teste foi preparado utilizando o mesmo processo de pré-processamento.
 
--   Python
--   Pandas
--   NumPy
--   Scikit-learn
--   Matplotlib
--   Seaborn
--   DuckDB
--   Jupyter Notebook
+Em seguida, o modelo `VotingClassifier` foi utilizado para gerar as previsões.
 
-## 📚 O que aprendi com este projeto
+O resultado final foi salvo no arquivo:
 
-Este projeto foi desenvolvido durante o início da minha graduação em
-**Ciência de Dados** e teve como objetivo principalmente colocar em
-prática conceitos estudados.
-
-Entre os principais aprendizados estão:
-
--   Manipulação de dados com Pandas;
--   Exploração e análise de datasets;
--   Consultas utilizando DuckDB;
--   Visualização de dados;
--   Tratamento de valores ausentes;
--   Engenharia de atributos;
--   `Pipeline` e `ColumnTransformer`;
--   One-Hot Encoding;
--   Padronização de dados;
--   Treinamento de modelos de classificação;
--   Otimização de hiperparâmetros;
--   Validação cruzada;
--   Avaliação de modelos de Machine Learning.
-
-> **Observação:** este é um projeto de estudos e faz parte do meu
-> processo de aprendizado em Ciência de Dados. O objetivo principal é
-> demonstrar a aplicação prática dos conceitos estudados, e não apenas
-> obter a maior acurácia possível.
+```text
+resultado.csv
